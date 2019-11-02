@@ -29,6 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.http.HttpResponse;
@@ -39,36 +40,39 @@ import org.apache.http.impl.client.HttpClientBuilder;
 /**
  *
  * @author Carlos Vásquez Polanco
+ *
  */
 public class Utils {
-    
+
+    public static final Locale LOCALE_MX = new Locale("es", "MX");
+
     /**
-     * 
+     *
      * @param value
-     * @return 
+     * @return
      */
     public static boolean hasOnlyDigits(String value){
         return value.matches("[0-9]+");
     }
-    
+
     /**
-     * 
+     *
      * Extraer fecha formateada
-     * 
+     *
      * @param date
-     * @return 
+     * @return
      */
     public static String getDateFormatted(Date date){
         return getDateFormatted(date, "dd/MM/yyyy");
     }
-    
+
     /**
-     * 
-     * Extraer fecha formateada, indicando cual es el formato 
-     * 
+     *
+     * Extraer fecha formateada, indicando cual es el formato
+     *
      * @param date
      * @param format
-     * @return 
+     * @return
      */
     public static String getDateFormatted(Date date, String format){
         DateFormat formatter = new SimpleDateFormat(format);
@@ -76,30 +80,45 @@ public class Utils {
     }
 
     /**
-     * 
-     * Método utilizado para convertir un objeto Strign en un objeto fecha. 
-     * 
+     *
+     * Método utilizado para convertir un objeto Strign en un objeto fecha.
+     *
      * @param date
      * @return
-     * @throws ParseException 
+     * @throws ParseException
      */
     public static Date convertStringToDate(String date) throws ParseException{
         return convertStringToDate(date,"yyyy-MM-dd");
     }
-    
+
     /**
-     * 
-     * Método utilizado para convertir un objeto Strign en un objeto fecha 
+     *
+     * Método utilizado para convertir un objeto Strign en un objeto fecha
      * indicando el formato en el segundo parámetro.
-     * 
+     *
      * @param date
      * @param format
      * @return
-     * @throws ParseException 
+     * @throws ParseException
      */
     public static Date convertStringToDate(String date, String format) throws ParseException{
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         return sdf.parse(date);
+    }
+
+
+    public static String dateFormatter(String inputFormat, String outputFormat, String inputDate){
+        //Define formato default de entrada.
+        String input = inputFormat.isEmpty()? "yyyy-MM-dd hh:mm:ss" : inputFormat;
+        //Define formato default de salida.
+        String output = outputFormat.isEmpty()? "d 'de' MMMM 'del' yyyy" : outputFormat;
+        String outputDate = inputDate;
+        try {
+            outputDate = new SimpleDateFormat(output, LOCALE_MX).format(new SimpleDateFormat(input, LOCALE_MX).parse(inputDate));
+        } catch (Exception e) {
+            System.out.println("dateFormatter(): " + e.getMessage());
+        }
+        return outputDate;
     }
 
 

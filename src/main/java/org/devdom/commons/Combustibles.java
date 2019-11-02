@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.XMLEvent;
@@ -44,6 +45,7 @@ import org.devdom.commons.util.Utils;
  * </ul>
  *
  * @author Carlos Vásquez Polanco
+ * @author fdelossantos || 2019
  * @see #RSS_COMBUSTIBLES
  * @see #URL_HISTORICO_COMBUSTIBLES
  * @since 0.6.7
@@ -99,12 +101,15 @@ public class Combustibles {
                     String item = event.asStartElement().getName().getLocalPart();
 
                     if("pubDate".equals(item)){
-                        System.out.println(dateFormatter("yyyy-MM-dd hh:mm:ss","EEEE','d 'de' MMMM 'de' yyyy Z",
-                            "2017-05-05 12:24:34"));
-                        publishDate = new SimpleDateFormat(dateFormat, new Locale("es", "MX")).parse(value.toLowerCase().replace("- ","-"));
+                        value=value.toLowerCase().replace("- ","-");
+                        publishDate = new SimpleDateFormat(dateFormat, new Locale("es", "MX")).parse(value);
+
                     }else if("title".equals(item)){
                         title = value;
-                    }else{
+                    }else if("description".equals(item)){
+
+//                        System.out.println(item);
+//                        System.out.println(value);
                         appendCombustible(list, item, value);
                     }
                 }
@@ -120,20 +125,7 @@ public class Combustibles {
 
         return combustibles;
     }
-    public static final Locale LOCALE_MX = new Locale("es", "MX");
-    public static String dateFormatter(String inputFormat, String outputFormat, String inputDate){
-        //Define formato default de entrada.
-        String input = inputFormat.isEmpty()? "yyyy-MM-dd hh:mm:ss" : inputFormat;
-        //Define formato default de salida.
-        String output = outputFormat.isEmpty()? "d 'de' MMMM 'del' yyyy" : outputFormat;
-        String outputDate = inputDate;
-        try {
-            outputDate = new SimpleDateFormat(output, LOCALE_MX).format(new SimpleDateFormat(input, LOCALE_MX).parse(inputDate));
-        } catch (Exception e) {
-            System.out.println("dateFormatter(): " + e.getMessage());
-        }
-        return outputDate;
-    }
+
 
     /**
      * Método utilizado para extraer el valor de un campo
@@ -142,45 +134,83 @@ public class Combustibles {
      * @return
      * @throws XMLStreamException
      */
-    private static String getCharacterData(XMLEvent event, XMLEventReader eventReader)
-            throws XMLStreamException {
+    private static String getCharacterData(XMLEvent event, XMLEventReader eventReader)  throws XMLStreamException {
         String result = "";
         event = eventReader.nextEvent();
 
         if (event instanceof Characters) {
             result = event.asCharacters().getData();
         }
+        if(result.trim().isEmpty()) {
+            switch (event.getEventType()) {
+                case XMLStreamConstants.CHARACTERS:
+                case XMLStreamConstants.CDATA:
+//                System.out.println(eventReader.nextEvent().toString());
+                    result = eventReader.nextEvent().toString();
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+//            System.out.println( event.asCharacters().isCData()?"true":"false");
         return result;
     }
 
     private static void appendCombustible(List<Combustible> list, String item, String value) throws Exception {
-        if("gas95".equals(item)) {
-            list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GASOLINA_PREMIUM));
-        }
 
-        if("gas89".equals(item)){
-            list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GASOLINA_REGULAR));
-        }
+        String  data=clearData(value);
+        String[] items= data.split("item");
 
-        if("gasoilp".equals(item)){
-            list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GASOIL_PREMIUM));
-        }
+        if(items.length<2) return;
 
-        if("gasoilr".equals(item)){
-            list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GASOIL_REGULAR));
-        }
+        for( int i=0; i<items.length;i++) {
+            if(items[i].trim().equals("")) continue;
 
-        if("kerosene".equals(item)){
-            list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.KEROSENE));
-        }
+            String[] temp=items[i].trim().split(": RD");
+            item=temp[0];
+        System.out.println(item);
 
-        if("glp".equals(item)){
-            list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GAS_LICUADO_PETROLEO));
-        }
 
-        if("gnv".equals(item)){
-            list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GAS_NATURAL_VEHICULAR));
+            value=temp[1];
+
+            if ("Gasolina Premium".equals(item)) {
+                list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GASOLINA_PREMIUM));
+            }
+
+            if ("Gasolina Regular".equals(item)) {
+                list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GASOLINA_REGULAR));
+            }
+
+            if ("Gasoil Optimo".equals(item)) {
+                list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GASOIL_PREMIUM));
+            }
+
+            if ("Gasoil Regular".equals(item)) {
+                list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GASOIL_REGULAR));
+            }
+
+            if ("Kerosene".equals(item)) {
+                list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.KEROSENE));
+            }
+
+            if ("Gas Licuado de Petróleo (GLP)".equals(item)) {
+                list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GAS_LICUADO_PETROLEO));
+            }
+
+            if ("Gas Natural Vehicular (GNV)".equals(item)) {
+                list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GAS_NATURAL_VEHICULAR));
+            }
         }
+    }
+
+    private static String clearData(String value) {
+        return value.replace("<div><strong>","item ")
+                    .replace("</div>","")
+                    .replace("$","")
+                    .replace("</strong>","");
     }
 
     /**
