@@ -27,10 +27,7 @@ package org.devdom.commons;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -45,47 +42,49 @@ import org.devdom.commons.util.Utils;
  *   <li>RSS feed: http://www.seic.gov.do/rss/combustibles.aspx</li>
  *   <li>Histórico de precios: http://www.seic.gov.do/hidrocarburos/precios-de-combustibles.aspx</li>
  * </ul>
- * 
+ *
  * @author Carlos Vásquez Polanco
  * @see #RSS_COMBUSTIBLES
  * @see #URL_HISTORICO_COMBUSTIBLES
  * @since 0.6.7
  */
 public class Combustibles {
-    private final String title;
-    private final Date publishDate;
-    private final List<Combustible> combustibles;
-
     /**
      * URL del RSS feed de los precios de los combustibles.
      */
-    public static final String RSS_COMBUSTIBLES = "http://www.seic.gov.do/rss/combustibles.aspx";
+    public static final String RSS_COMBUSTIBLES = "https://www.micm.gob.do/rss/combustibles.aspx";
 
     /**
      * URL de la pagina donde se publica el historico de los precios de los combustibles.
      */
-    public static final String URL_HISTORICO_COMBUSTIBLES = "http://www.seic.gov.do/hidrocarburos/precios-de-combustibles.aspx";
+    public static final String URL_HISTORICO_COMBUSTIBLES = "https://www.micm.gob.do/combustibles.aspx/hidrocarburos/precios-de-combustibles.aspx";
+
+    private final String title;
+    private final Date publishDate;
+    private final List<Combustible> combustibles;
+
 
     private Combustibles(String title, Date publishDate, List<Combustible> combustibles) {
         this.title = title;
         this.publishDate = publishDate;
         this.combustibles = combustibles;
     }
-    
+
     /**
      * Obtener instancia de {@link Combustibles} con los precios actuales.
      * @throws org.devdom.commons.CommonsException
      * @see Combustible
-     * @return 
+     * @return
      */
     public static Combustibles getCurrentPrices() throws CommonsException {
         Combustibles combustibles = null;
         List<Combustible> list = new ArrayList<Combustible>();
         InputStream input = null;
-        final String dateFormat = "yyyy-MM-dd'T'HH:mm:ss";
+        final String dateFormat = "EEEE', 'dd 'de' MMM 'de' yyyy HH:mm:ss Z";
+//        final String dateFormat = "yyyy-MM-dd'T'HH:mm:ss";
         String title = null;
         Date publishDate = null;
-        
+
         try{
             input = new URL(RSS_COMBUSTIBLES).openStream();
             XMLInputFactory xif = XMLInputFactory.newFactory();
@@ -94,13 +93,15 @@ public class Combustibles {
 
             while (eventReader.hasNext()) {
                 event = eventReader.nextEvent();
-            
+
                 if (event.isStartElement()) {
                     String value = getCharacterData(event, eventReader);
                     String item = event.asStartElement().getName().getLocalPart();
 
                     if("pubDate".equals(item)){
-                        publishDate = new SimpleDateFormat(dateFormat).parse(value);
+                        System.out.println(dateFormatter("yyyy-MM-dd hh:mm:ss","EEEE','d 'de' MMMM 'de' yyyy Z",
+                            "2017-05-05 12:24:34"));
+                        publishDate = new SimpleDateFormat(dateFormat, new Locale("es", "MX")).parse(value.toLowerCase().replace("- ","-"));
                     }else if("title".equals(item)){
                         title = value;
                     }else{
@@ -119,13 +120,27 @@ public class Combustibles {
 
         return combustibles;
     }
+    public static final Locale LOCALE_MX = new Locale("es", "MX");
+    public static String dateFormatter(String inputFormat, String outputFormat, String inputDate){
+        //Define formato default de entrada.
+        String input = inputFormat.isEmpty()? "yyyy-MM-dd hh:mm:ss" : inputFormat;
+        //Define formato default de salida.
+        String output = outputFormat.isEmpty()? "d 'de' MMMM 'del' yyyy" : outputFormat;
+        String outputDate = inputDate;
+        try {
+            outputDate = new SimpleDateFormat(output, LOCALE_MX).format(new SimpleDateFormat(input, LOCALE_MX).parse(inputDate));
+        } catch (Exception e) {
+            System.out.println("dateFormatter(): " + e.getMessage());
+        }
+        return outputDate;
+    }
 
     /**
      * Método utilizado para extraer el valor de un campo
      * @param event
      * @param eventReader
      * @return
-     * @throws XMLStreamException 
+     * @throws XMLStreamException
      */
     private static String getCharacterData(XMLEvent event, XMLEventReader eventReader)
             throws XMLStreamException {
@@ -167,11 +182,11 @@ public class Combustibles {
             list.add(new Combustible(Double.parseDouble(value), Combustible.Tipos.GAS_NATURAL_VEHICULAR));
         }
     }
-    
+
     /**
      * Retorna el encabezado de la publicación de los precios de los {@link #getCombustibles() combustibles}.
      * Eg.: {@code Precios de Combustibles: 4 al 10 de octubre de 2014}
-     * @return 
+     * @return
      */
     public String getTitle() {
         return title;
@@ -179,7 +194,7 @@ public class Combustibles {
 
     /**
      * Retorna la fecha de publicación de los {@link #getCombustibles() combustibles}.
-     * @return 
+     * @return
      */
     public Date getPublishDate() {
         return publishDate;
