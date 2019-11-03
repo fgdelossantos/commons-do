@@ -110,18 +110,18 @@ public class Municipios extends Listable<Municipio> {
      * @throws MalformedJSONException si hubo error en el formato o validación del JSON
      */
     public Municipio get(String id)
-            throws RequesterInformationException, ParseException {
+        throws RequesterInformationException, ParseException, JSONException {
 
         String url = Configuration.DATA_MUNICIPIOS_URL + "/" + id + ".json";
 
         String json = getResponse(url);
 
-        if (isValidJSONArrayString(json)) {
-            // si la llamada retorna más de un elemento, da un error de documento mal formado
-            throw new MalformedJSONException();
-        }
+//        if (isValidJSONArrayString(json)) {
+//            // si la llamada retorna más de un elemento, da un error de documento mal formado
+//            throw new MalformedJSONException();
+//        }
 
-        return getMunicipioObject(parseJSONObject(json));
+        return getMunicipioObject((JSONObject) parseJSONObject(json).getJSONArray("data").get(0));
 
     }
 
