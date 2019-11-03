@@ -38,9 +38,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Clase utilizada para manejar la información referente a Municipios de la 
+ * Clase utilizada para manejar la información referente a Municipios de la
  * República Dominicana.
- * 
+ *
  * @see Municipio
  * @see Provincia
  * @author Carlos Vásquez Polanco
@@ -53,10 +53,10 @@ public class Municipios extends Listable<Municipio> {
     }
 
     /**
-     * 
-     * Retorna una lista de objetos de tipo Municipio con la referencia al 
+     *
+     * Retorna una lista de objetos de tipo Municipio con la referencia al
      * objeto Provincia a la que pertenece.
-     * 
+     *
      * @return ArrayList de objetos Municipio
      * @throws RequesterInformationException si hubo error en la recepción de información
      * @throws java.text.ParseException
@@ -64,10 +64,10 @@ public class Municipios extends Listable<Municipio> {
      * @see Municipio
      * @see Provincia
      */
-    public List<Municipio> getList() 
+    public List<Municipio> getList()
             throws RequesterInformationException, ParseException {
 
-        String url = Configuration.DATA_MUNICIPIOS_URL + ".json";
+        String url = Configuration.DATA_MUNICIPIOS_URL;
         ArrayList<Municipio> list = new ArrayList<Municipio>();
 
         String json = getResponse(url);
@@ -101,7 +101,7 @@ public class Municipios extends Listable<Municipio> {
 
     /**
      * Obtener la información de un municipio
-     * 
+     *
      * @param id id del objeto del Municipio que se desea obtener
      * @return objeto Municipio
      * @throws java.text.ParseException
@@ -126,7 +126,7 @@ public class Municipios extends Listable<Municipio> {
     }
 
     /**
-     * 
+     *
      * @param json RAW del JSON recibido para ser formateado
      * @return objeto Municipio
      * @see Municipio
@@ -137,15 +137,17 @@ public class Municipios extends Listable<Municipio> {
             throws MalformedJSONException {
 
         try {
-            Municipio municipio = new Municipio(json.getInt("id"));
+            Municipio municipio = new Municipio(json.getInt("codigo"));
             municipio.setName(json.getString("nombre"));
 
-            JSONObject jsonProvincia = json.getJSONObject("provincia");
-
-            Provincia provincia = new Provincia(jsonProvincia.getInt("id"));
-            provincia.setNombre(jsonProvincia.getString("nombre"));
-
-            municipio.setProvincia(provincia);
+//            JSONObject jsonProvincia = json.getJSONObject("provincia");
+//
+//            Provincias p= new Provincias();
+//            p.get()
+//            Provincia provincia = new Provincia(jsonProvincia.getInt(" codigo"));
+//            provincia.setNombre(jsonProvincia.getString("nombre"));
+//
+//            municipio.setProvincia(provincia);
 
             return municipio;
         } catch (JSONException ex) {

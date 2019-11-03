@@ -16,28 +16,28 @@ import org.json.JSONObject;
 public abstract class JsonGetter<T> extends Requester {
 
     private final String BASE_URL;
-    
+
     public JsonGetter(String baseUri, String charset) {
         super(charset);
         this.BASE_URL = baseUri;
     }
-    
-    public abstract T get(String id) throws RequesterInformationException, ParseException;
-    
+
+    public abstract T get(String id) throws RequesterInformationException, ParseException, JSONException;
+
     /**
      * <p>Obtener un JSONObject a partir de la llamada al API de http://data.developers.do
-     * 
-     * <p>Aun así, el método puede ser utilizado para llamar recursos desde otros 
+     *
+     * <p>Aun así, el método puede ser utilizado para llamar recursos desde otros
      * recursos siempre que retornen un JSON.
-     * 
+     *
      * @param response
      * @return Objeto JSONObject
      * @throws RequesterInformationException si hubo error en la recepción de información
      * @throws MalformedJSONException si hubo error en el formato o validación del JSON
      */
-    public JSONObject getJSONObjectResponse(String response) 
+    public JSONObject getJSONObjectResponse(String response)
             throws RequesterInformationException {
-        
+
         if(!isValidJSONObjectString(response)){
             throw new MalformedJSONException("La respuesta no es un objeto JSON válido");
         }
@@ -46,7 +46,7 @@ public abstract class JsonGetter<T> extends Requester {
 
     }
 
-    
+
     /**
      * Convetir a objeto JSONObject un string
      * @param response
@@ -65,18 +65,18 @@ public abstract class JsonGetter<T> extends Requester {
 
     /**
      * Validar si el string suplido puede ser un JSONObject válido
-     * 
+     *
      * @param response
      * @return boolean
      */
     public boolean isValidJSONObjectString(String response){
         return (response.startsWith("{"));
     }
-    
+
     /**
-     * Retorna la url con las partes agregadas. 
+     * Retorna la url con las partes agregadas.
      * @param format
-     *          Formato de la respuesta esperada. 
+     *          Formato de la respuesta esperada.
      * @param parts
      *          Las partes de la dirección http a ser agregadas.
      * @return
@@ -89,6 +89,7 @@ public abstract class JsonGetter<T> extends Requester {
             uriString.append("/").append(part);
         }
         try {
+
             uri = new URI(uriString.toString() + format.getExtension());
         } catch (URISyntaxException e) {
             throw new MalformedJSONException(e.getMessage());

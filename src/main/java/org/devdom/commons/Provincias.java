@@ -100,16 +100,17 @@ public class Provincias extends Listable<Provincia> {
      * @throws MalformedJSONException si hubo error en el formato o validación del JSON
      */
     public Provincia get(String id)
-            throws RequesterInformationException, MalformedJSONException{
+        throws RequesterInformationException, MalformedJSONException, JSONException {
 
         String json = getResponse(buildURL(FormatType.JSON, id));
+//
+//        if(isValidJSONArrayString(json)){
+//            System.out.println(json);
+//            // si la llamada retorna más de un elemento, da un error de documento mal formado
+//            throw new MalformedJSONException();
+//        }
 
-        if(isValidJSONArrayString(json)){
-            // si la llamada retorna más de un elemento, da un error de documento mal formado
-            throw new MalformedJSONException();
-        }
-
-        return getProvinciaObject(parseJSONObject(json) );
+        return getProvinciaObject((JSONObject) parseJSONObject(json).getJSONArray("data").get(0));
 
     }
 
