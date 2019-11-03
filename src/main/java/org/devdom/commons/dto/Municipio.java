@@ -30,7 +30,7 @@ package org.devdom.commons.dto;
  * @author Carlos Vásquez Polanco
  */
 public class Municipio extends BaseModel {
-    
+
     private String name;
     private Provincia provincia;
 
@@ -69,5 +69,5 @@ public class Municipio extends BaseModel {
     public String toString() {
         return "Municipio{" + "id=" + id + ", name=" + name + ", provincia=" + provincia.toString() + '}';
     }
-    
+
 }

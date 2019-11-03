@@ -45,9 +45,9 @@ import org.devdom.commons.util.Utils;
  * </ul>
  *
  * @author Carlos Vásquez Polanco
- * @author fdelossantos || 2019
+ * @author gullermo de los santos || 2019
+ *
  * @see #RSS_COMBUSTIBLES
- * @see #URL_HISTORICO_COMBUSTIBLES
  * @since 0.6.7
  */
 public class Combustibles {
@@ -56,10 +56,10 @@ public class Combustibles {
      */
     public static final String RSS_COMBUSTIBLES = "https://www.micm.gob.do/rss/combustibles.aspx";
 
-    /**
-     * URL de la pagina donde se publica el historico de los precios de los combustibles.
-     */
-    public static final String URL_HISTORICO_COMBUSTIBLES = "https://www.micm.gob.do/combustibles.aspx/hidrocarburos/precios-de-combustibles.aspx";
+//    /**
+//     * URL de la pagina donde se publica el historico de los precios de los combustibles.
+//     */
+//    public static final String URL_HISTORICO_COMBUSTIBLES = "https://www.micm.gob.do/combustibles.aspx/hidrocarburos/precios-de-combustibles.aspx";
 
     private final String title;
     private final Date publishDate;
@@ -171,7 +171,7 @@ public class Combustibles {
 
             String[] temp=items[i].trim().split(": RD");
             item=temp[0];
-        System.out.println(item);
+//        System.out.println(item);
 
 
             value=temp[1];

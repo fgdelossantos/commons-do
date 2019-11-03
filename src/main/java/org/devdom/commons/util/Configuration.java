@@ -31,15 +31,15 @@ package org.devdom.commons.util;
  */
 public interface Configuration {
     //URI del API de Developers Dominicanos
-    String DATA_DEVDO_URI_V1 = "http://data.developers.do/api/v1/";
-    
+    String DATA_DEVDO_URI_V1 = "http://provinciasrd.raydelto.org/";
+
     String DATA_RNC_URL = DATA_DEVDO_URI_V1 + "empresas/";
-    
+
     String DATA_PROVINCIAS_URL = DATA_DEVDO_URI_V1 + "provincias";
-    
+
     String DATA_MUNICIPIOS_URL = DATA_DEVDO_URI_V1 + "municipios";
 
     String DATA_FERIADOS_URL = DATA_DEVDO_URI_V1 + "feriados";
-    
+
     String DR_TIME_ZONE = "Etc/GMT+4";
 }

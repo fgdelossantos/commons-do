@@ -10,12 +10,12 @@ import org.junit.Test;
 
 public class ProvinciasTest {
     Provincias provinciaService;
-    
+
     @Before
     public void setup() {
         provinciaService = new Provincias();
     }
-    
+
     @Test
     public void getAll() {
         try {
@@ -26,19 +26,19 @@ public class ProvinciasTest {
             Assert.fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void get() {
         try {
             List<Provincia> pronvincias = provinciaService.getList();
-            
+
             Provincia provincia = pronvincias.get(new Random().nextInt(pronvincias.size()));
-            
+
             Provincia external = provinciaService.get(String.valueOf(provincia.getId()));
             Assert.assertEquals(provincia, external);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
     }
-    
+
 }

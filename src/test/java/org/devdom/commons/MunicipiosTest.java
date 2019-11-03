@@ -11,13 +11,13 @@ import org.junit.Test;
 public class MunicipiosTest {
     Municipios municipioService;
     //Provincias provinciaService;
-    
+
     @Before
     public void setup() {
         municipioService = new Municipios();
         //provinciaService = new Provincias();
     }
-    
+
     @Test
     public void getAll() {
         try {
@@ -28,33 +28,33 @@ public class MunicipiosTest {
             Assert.fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void get() {
         try {
             List<Municipio> municipios = municipioService.getList();
-            
+
             Municipio municipio = municipios.get(new Random().nextInt(municipios.size()));
-            
+
             Municipio external = municipioService.get(String.valueOf(municipio.getId()));
             Assert.assertEquals(municipio, external);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
     }
-    
+
 //    @Test
-//    TODO to be implemented 
+//    TODO to be implemented
 //    getMunicipios by city
 //    public void getMunicipiosByProvincia() {
 //        try {
 //            List<Provincia> pronvincias = provinciaService.getList();
 //            Provincia municipio = pronvincias.get(new Random().nextInt(pronvincias.size()));
-//            
-//            
+//
+//
 //        } catch (Exception e) {
 //            Assert.fail(e.getMessage());
 //        }
 //    }
-    
+
 }

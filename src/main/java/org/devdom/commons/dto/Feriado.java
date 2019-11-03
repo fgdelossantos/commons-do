@@ -31,7 +31,7 @@ import java.util.Date;
  * @author Carlos Vásquez Polanco
  */
 public class Feriado extends BaseModel {
-    
+
     private Date fechaOriginal;
     private Date fechaMovido;
     private String motivo;

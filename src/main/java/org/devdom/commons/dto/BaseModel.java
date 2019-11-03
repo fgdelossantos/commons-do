@@ -1,6 +1,8 @@
 package org.devdom.commons.dto;
 
 public class BaseModel {
+
+
     protected int id;
 
     public int getId() {
@@ -30,6 +32,6 @@ public class BaseModel {
         BaseModel other = (BaseModel) obj;
         return id == other.id;
     }
-    
-    
+
+
 }
